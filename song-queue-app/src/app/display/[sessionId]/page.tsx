@@ -43,6 +43,7 @@ export default function DisplayPage() {
 
   // ======= STYLING =======
   const containerStyle: React.CSSProperties = {
+    position: 'relative',      // needed for absolutely positioned elements
     minHeight: '100vh',
     margin: 0,
     padding: '2rem',
@@ -56,6 +57,27 @@ export default function DisplayPage() {
     // Example retro font; ensure you import it in your <head> or global CSS
     fontFamily: '"Press Start 2P", monospace',
     textAlign: 'center',
+    overflow: 'hidden', // so the record doesn't cause scrollbars if it extends
+  };
+
+  // Position for the spinning record on the left
+  const leftRecordStyle: React.CSSProperties = {
+    position: 'absolute',
+    left: 0,
+    top: '50%',
+    transform: 'translateY(-50%)', // center vertically
+    width: '150px',                // adjust size as desired
+    height: 'auto',
+  };
+
+  // Position for the spinning record on the right
+  const rightRecordStyle: React.CSSProperties = {
+    position: 'absolute',
+    right: 0,
+    top: '50%',
+    transform: 'translateY(-50%)',
+    width: '150px',
+    height: 'auto',
   };
 
   const titleStyle: React.CSSProperties = {
@@ -106,6 +128,20 @@ export default function DisplayPage() {
 
   return (
     <main style={containerStyle}>
+      {/* Left spinning record */}
+      <img
+        src="/record.gif"
+        alt="Spinning record"
+        style={leftRecordStyle}
+      />
+
+      {/* Right spinning record */}
+      <img
+        src="/record.gif"
+        alt="Spinning record"
+        style={rightRecordStyle}
+      />
+
       <h1 style={titleStyle}>Now Playing</h1>
 
       {playing ? (
@@ -138,18 +174,17 @@ export default function DisplayPage() {
       <h3 style={{ fontSize: '1.5rem', textShadow: '2px 2px #000' }}>Scan to Request!</h3>
       <p style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>Use your phone's camera or QR scanner</p>
 
-      {/*
-        1) Pre-generate a QR code for /session/<sessionId>/request
-        2) Save as /public/qr.png
-      */}
       <img
-        src="/qr.png"
+        src={`/api/qr?sessionId=${sessionId}`}
         alt="QR code to request a song"
-        style={qrStyle}
+        style={{ width: 200, height: 200, borderRadius: '8px', margin: '1rem 0' }}
       />
 
       <p style={{ marginTop: '1rem', fontSize: '1rem' }}>
-        Or visit: <a href={requestPageURL} style={{ color: '#fff', textDecoration: 'underline' }}>{requestPageURL}</a>
+        Or visit:{' '}
+        <a href={requestPageURL} style={{ color: '#fff', textDecoration: 'underline' }}>
+          {requestPageURL}
+        </a>
       </p>
     </main>
   );

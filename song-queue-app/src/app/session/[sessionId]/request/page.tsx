@@ -46,47 +46,123 @@ export default function MobileRequestPage() {
     }
   };
 
+  // ====== STYLES ======
+  const containerStyle: React.CSSProperties = {
+    minHeight: '100vh',
+    margin: 0,
+    padding: '2rem',
+    // Vibrant retro gradient
+    background: 'linear-gradient(135deg, #2c3e50 0%, #fd746c 100%)',
+    color: '#fff',
+    // Example retro font (make sure you load this in head.tsx or global)
+    fontFamily: '"Press Start 2P", monospace',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    textAlign: 'center',
+    textShadow: '1px 1px #000',
+  };
+
+  const headingStyle: React.CSSProperties = {
+    fontSize: '1.8rem',
+    marginBottom: '1rem',
+  };
+
+  const subHeadingStyle: React.CSSProperties = {
+    fontSize: '1.2rem',
+    marginBottom: '1.5rem',
+  };
+
+  const formStyle: React.CSSProperties = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+    width: '100%',
+    maxWidth: '400px',
+  };
+
+  const labelStyle: React.CSSProperties = {
+    marginBottom: '0.3rem',
+    fontSize: '0.9rem',
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '0.6rem',
+    fontFamily: '"Press Start 2P", monospace',
+    border: '2px solid #fff',
+    borderRadius: '8px',
+    background: 'rgba(0, 0, 0, 0.2)',
+    color: '#fff',
+    outline: 'none',
+  };
+
+  const buttonStyle: React.CSSProperties = {
+    padding: '0.8rem',
+    fontSize: '1rem',
+    fontFamily: '"Press Start 2P", monospace',
+    cursor: 'pointer',
+    border: '2px solid #fff',
+    borderRadius: '8px',
+    background: 'rgba(0,0,0,0.2)',
+    color: '#fff',
+    textShadow: '1px 1px #000',
+    transition: 'transform 0.2s, boxShadow 0.2s',
+  };
+
   return (
-    <main style={{ maxWidth: 400, margin: '0 auto', padding: '1rem' }}>
-      <h1>Request a Song</h1>
-      <p>Session: <strong>{sessionId}</strong></p>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+    <main style={containerStyle}>
+      <h1 style={headingStyle}>Request a Song</h1>
+      {/* <p style={subHeadingStyle}>Session: <strong>{sessionId}</strong></p> */}
+
+      <form onSubmit={handleSubmit} style={formStyle}>
         <div>
-          <label htmlFor="userName">Your Name:</label>
+          <label style={labelStyle} htmlFor="userName">Your Name:</label>
           <input
             required
             name="userName"
             id="userName"
             value={formData.userName}
             onChange={handleChange}
-            style={{ width: '100%', padding: '0.5rem' }}
+            style={inputStyle}
           />
         </div>
 
         <div>
-          <label htmlFor="albumName">Album Name:</label>
+          <label style={labelStyle} htmlFor="albumName">Album Name:</label>
           <input
             required
             name="albumName"
             id="albumName"
             value={formData.albumName}
             onChange={handleChange}
-            style={{ width: '100%', padding: '0.5rem' }}
+            style={inputStyle}
           />
         </div>
 
         <div>
-          <label htmlFor="trackName">Track Name (optional):</label>
+          <label style={labelStyle} htmlFor="trackName">Track Name (optional):</label>
           <input
             name="trackName"
             id="trackName"
             value={formData.trackName}
             onChange={handleChange}
-            style={{ width: '100%', padding: '0.5rem' }}
+            style={inputStyle}
           />
         </div>
 
-        <button type="submit" style={{ padding: '0.75rem', marginTop: '1rem' }}>
+        <button
+          type="submit"
+          style={buttonStyle}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.05)';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 10px #fff';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none';
+          }}
+        >
           Submit Request
         </button>
       </form>
