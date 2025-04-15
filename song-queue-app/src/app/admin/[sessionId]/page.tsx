@@ -24,8 +24,6 @@ export default function AdminSessionDetail() {
   const sessionId = params.sessionId;
 
   const [session, setSession] = useState<Session | null>(null);
-
-  // For drag-and-drop, we store the 'dragged item index'
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   // ======= API Calls =======
@@ -85,14 +83,13 @@ export default function AdminSessionDetail() {
     window.open(`/display/${sessionId}`, '_blank');
   };
 
-  // Hypothetical endpoint to delete a request from the queue
   const deleteRequest = async (requestId: number) => {
     if (!sessionId) return;
     const confirmDel = confirm('Are you sure you want to delete this request?');
     if (!confirmDel) return;
 
     try {
-      // Example: DELETE /api/sessions/:sessionId/requests/:requestId
+      // Example endpoint; implement on backend as needed.
       const res = await fetch(`/api/sessions/${sessionId}/requests/${requestId}`, {
         method: 'DELETE',
       });
@@ -101,7 +98,7 @@ export default function AdminSessionDetail() {
         alert(`Error deleting request: ${data.error || ''}`);
         return;
       }
-      // Remove the request locally
+      // Remove locally if deletion succeeds
       setSession((prev) => {
         if (!prev) return prev;
         const updatedRequests = prev.requests.filter((r) => r.id !== requestId);
@@ -114,17 +111,46 @@ export default function AdminSessionDetail() {
     }
   };
 
-  useEffect(() => {
-    loadSession();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionId]);
+  // ======= Next Song Functionality =======
+  const nextSong = async () => {
+    if (!session) return;
+
+    // Copy current requests
+    const requestsCopy = [...session.requests];
+
+    // Find the currently playing request
+    const playingIndex = requestsCopy.findIndex(r => r.status === 'playing');
+
+    // If one is playing, mark it as played
+    if (playingIndex !== -1) {
+      requestsCopy[playingIndex].status = 'played';
+    }
+
+    // Find the first pending request (if any)
+    const nextIndex = requestsCopy.findIndex(r => r.status === 'pending');
+    if (nextIndex !== -1) {
+      requestsCopy[nextIndex].status = 'playing';
+    } else {
+      alert('No pending requests to play.');
+      return;
+    }
+
+    // Update local state with new order/status
+    setSession({ ...session, requests: requestsCopy });
+
+    // Optionally: Persist this new order via an API call.
+    // await fetch(`/api/sessions/${sessionId}/requests/reorder`, {
+    //   method: 'PUT',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(requestsCopy)
+    // });
+  };
 
   // ======= DRAG-AND-DROP HANDLERS =======
   const handleDragStart = (index: number) => {
     setDraggedIndex(index);
   };
 
-  // By default, dropping is disabled unless we call e.preventDefault() in onDragOver
   const handleDragOver = (e: React.DragEvent<HTMLLIElement>) => {
     e.preventDefault();
   };
@@ -144,9 +170,13 @@ export default function AdminSessionDetail() {
     setSession({ ...session, requests: requestsCopy });
     setDraggedIndex(null);
 
-    // Optionally, you might call an API to persist the new order here:
+    // Optionally: call an API to persist the new order
     // await fetch(`/api/sessions/${sessionId}/requests/reorder`, { method: 'PUT', body: JSON.stringify(requestsCopy) });
   };
+
+  useEffect(() => {
+    loadSession();
+  }, [sessionId]);
 
   if (!session) {
     return (
@@ -205,9 +235,6 @@ export default function AdminSessionDetail() {
     cursor: 'move',
   };
 
-  // Hover/focus effects can be handled inline or in a separate CSS
-  // For brevity, we'll just do onMouseEnter in the button if we want
-
   return (
     <main style={containerStyle}>
       <h1 style={headerStyle}>Admin Detail - Session {session.sessionId}</h1>
@@ -259,6 +286,20 @@ export default function AdminSessionDetail() {
           }}
         >
           Display QR Code
+        </button>
+        <button
+          style={buttonStyle}
+          onClick={nextSong}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.05)';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 10px #fff';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none';
+          }}
+        >
+          Next Song
         </button>
       </div>
 
